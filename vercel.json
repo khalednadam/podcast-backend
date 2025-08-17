@@ -8,6 +8,16 @@
     ],
     "routes": [
         {
+            "src": "/search",
+            "dest": "src/main.ts",
+            "methods": ["GET", "OPTIONS"]
+        },
+        {
+            "src": "/search/(.*)",
+            "dest": "src/main.ts",
+            "methods": ["DELETE", "OPTIONS"]
+        },
+        {
             "src": "/(.*)",
             "dest": "src/main.ts",
             "methods": [
@@ -17,6 +27,31 @@
                 "DELETE",
                 "PATCH",
                 "OPTIONS"
+            ]
+        }
+    ],
+    "functions": {
+        "src/main.ts": {
+            "maxDuration": 30
+        }
+    },
+    "public": true,
+    "headers": [
+        {
+            "source": "/(.*)",
+            "headers": [
+                {
+                    "key": "Access-Control-Allow-Origin",
+                    "value": "*"
+                },
+                {
+                    "key": "Access-Control-Allow-Methods",
+                    "value": "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+                },
+                {
+                    "key": "Access-Control-Allow-Headers",
+                    "value": "Content-Type, Authorization"
+                }
             ]
         }
     ]
