@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSearchDto } from './dto/create-search.dto';
-import { SearchDto } from './dto/search.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SearchResult } from './search-result.entity';
 import { Repository } from 'typeorm';
 import axios, { AxiosResponse } from 'axios';
 import moment from 'moment';
 import { UpdateSearchDto } from './dto/update-search.dto';
-import * as _ from 'lodash';
 import { Podcast } from '../types/podcast';
 import { FetchDto } from './dto/fetch.dto';
 import { Episode } from '../types/episode';
@@ -18,52 +16,6 @@ export class SearchService {
     @InjectRepository(SearchResult)
     private searchResultRepository: Repository<SearchResult>,
   ) {}
-
-  /**
-   * Search
-   * @param searchDto
-   */
-  async search(searchDto: SearchDto) {
-    const existingSearch = await this.findOne(searchDto.query);
-    const isValidDate =
-      existingSearch && this.isDateValid(existingSearch.updatedAt, new Date());
-
-    // if exists and recent
-    if (existingSearch && isValidDate) {
-      return existingSearch;
-
-      // if exists but not recent
-    } else if (existingSearch && !isValidDate) {
-      const apiSearchResult = await this.fetchApi(searchDto);
-
-      // if exists and not recent but the result is still the same
-      if (
-        _.isEqual(apiSearchResult.podcasts, existingSearch.podcasts) &&
-        _.isEqual(apiSearchResult.episodes, existingSearch.episodes)
-      ) {
-        await this.update({
-          query: searchDto.query,
-          updatedAt: new Date(),
-        } as UpdateSearchDto);
-        return existingSearch;
-
-        // if exists and not recent and the result has changed
-      } else {
-        return apiSearchResult;
-      }
-    }
-
-    // if it doesn't exist in the database
-    const apiSearchResult = await this.fetchApi(searchDto);
-    const newFetchedResults = await this.create({
-      query: searchDto.query,
-      episodes: apiSearchResult.episodes,
-      episodesCount: apiSearchResult.episodesCount,
-      podcasts: apiSearchResult.podcasts,
-      podcastsCount: apiSearchResult.podcastsCount,
-    });
-    return newFetchedResults;
-  }
 
   /**
    * Store search and result
