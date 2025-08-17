@@ -171,7 +171,7 @@ export class SearchService {
   }
 
   isDateValid(date1: Date, date2: Date) {
-    const diffInHours = moment(date2).diff(moment(date1), 'hours');
-    return diffInHours < 2;
+    const diffInMinutes = moment(date2).diff(moment(date1), 'minutes');
+    return diffInMinutes < 5;
   }
 }
