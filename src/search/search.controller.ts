@@ -36,6 +36,18 @@ export class SearchController {
         return apiSearchResult;
       }
     }
+
+    // if it doesn't exist in the database
+    const apiSearchResult = await this.searchService.fetchApi({ query });
+    const newFetchedResults = await this.searchService.create({
+      query,
+      episodes: apiSearchResult.episodes,
+      episodesCount: apiSearchResult.episodesCount,
+      podcasts: apiSearchResult.podcasts,
+      podcastsCount: apiSearchResult.podcastsCount,
+    });
+
+    return newFetchedResults;
   }
 
   @Delete(':id')
