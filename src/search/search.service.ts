@@ -55,7 +55,6 @@ export class SearchService {
 
     // if it doesn't exist in the database
     const apiSearchResult = await this.fetchApi(searchDto);
-    console.log('apires', apiSearchResult);
     const newFetchedResults = await this.create({
       query: searchDto.query,
       episodes: apiSearchResult.episodes,
@@ -151,6 +150,7 @@ export class SearchService {
       where: {
         query: query,
       },
+      order: { updatedAt: 'DESC' },
     });
     return searchResult;
   }
