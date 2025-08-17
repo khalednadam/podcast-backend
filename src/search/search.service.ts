@@ -90,25 +90,56 @@ export class SearchService {
     episodes: Episode[];
     episodesCount: number;
   }> {
+    const { podcasts, podcastsCount } = await this.fetchPodcasts(fetchDto);
+    const { episodes, episodesCount } = await this.fetchEpisodes(fetchDto);
+
+    const result = {
+      podcasts,
+      podcastsCount,
+      episodes,
+      episodesCount,
+    };
+    return result;
+  }
+
+  /**
+   * Fetch podcasts from the iTunes API
+   * @param fetchDto
+   */
+  async fetchPodcasts(
+    fetchDto: FetchDto,
+  ): Promise<{ podcasts: Podcast[]; podcastsCount: number }> {
     const podcastResults: AxiosResponse<{
       results: Podcast[];
       resultCount: number;
     }> = await axios.get(
       `https://itunes.apple.com/search?media=podcast&term=${fetchDto.query}`,
     );
+    const results = {
+      podcasts: podcastResults.data.results,
+      podcastsCount: podcastResults.data.resultCount,
+    };
+    return results;
+  }
+
+  /**
+   * Fetch podcasts from the iTunes API
+   * @param fetchDto
+   */
+  async fetchEpisodes(
+    fetchDto: FetchDto,
+  ): Promise<{ episodes: Episode[]; episodesCount: number }> {
     const episodesResults: AxiosResponse<{
       results: Episode[];
       resultCount: number;
     }> = await axios.get(
       `https://itunes.apple.com/search?term=${fetchDto.query}&entity=podcastEpisode`,
     );
-    const result = {
-      podcasts: podcastResults.data.results,
-      podcastsCount: podcastResults.data.resultCount,
+    const results = {
       episodes: episodesResults.data.results,
       episodesCount: episodesResults.data.resultCount,
     };
-    return result;
+    return results;
   }
 
   /**
